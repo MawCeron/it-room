@@ -1,4 +1,4 @@
-# Binarios de Go
+# Go Binaries
 *.exe
 *.exe~
 *.dll
@@ -7,18 +7,18 @@
 *.test
 *.out
 
-# Carpeta de build
+# Build folder
 /build/
 dist/
 
-# Módulos y caché de Go
+# Go Modules and Cache
 /go.work
 /go.work.sum
 /.cache/
 /pkg/
 /vendor/
 
-# Archivos temporales del editor
+# Editor temp files
 *.swp
 *.swo
 *.tmp
@@ -37,6 +37,6 @@ dist/
 # Logs
 *.log
 
-# Archivos del sistema
+# System files
 .DS_Store
 Thumbs.db
