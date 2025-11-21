@@ -1,0 +1,42 @@
+# Binarios de Go
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Carpeta de build
+/build/
+dist/
+
+# Módulos y caché de Go
+/go.work
+/go.work.sum
+/.cache/
+/pkg/
+/vendor/
+
+# Archivos temporales del editor
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
+
+# SQLite databases
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+*.sqlite-shm
+*.sqlite-wal
+
+# Logs
+*.log
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
