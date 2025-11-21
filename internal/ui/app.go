@@ -20,9 +20,15 @@ func NewApp(d *db.DB) *App {
 
 func (a *App) Run() error {
 
+	pages := tview.NewPages()
+	assetsPage := NewAssetsPage(a.db)
+	pages.AddPage(assetsPage.Name(), assetsPage.View(), true, true)
+
 	menu := tview.NewList()
 	menuWidth := 20
-	menu.AddItem("Assets", "", 0, nil)
+	menu.AddItem("Assets", "", 0, func() {
+		pages.SwitchToPage(assetsPage.Name())
+	})
 	menu.AddItem("Assignments", "", 0, nil)
 	menu.AddItem("Maintenance", "", 0, nil)
 	menu.AddItem("Licenses", "", 0, nil)
@@ -33,8 +39,6 @@ func (a *App) Run() error {
 	frame.SetBorder(true)
 	frame.SetBorders(1, 0, 1, 1, 1, 1)
 	frame.SetTitle(" IT Room ")
-
-	pages := tview.NewBox().SetTitle("page").SetBorder(true)
 
 	flex := tview.NewFlex()
 	flex.AddItem(frame, menuWidth+3, 1, true)
