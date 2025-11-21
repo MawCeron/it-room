@@ -19,15 +19,28 @@ func NewApp(d *db.DB) *App {
 }
 
 func (a *App) Run() error {
-	list := tview.NewList().ShowSecondaryText(false)
-	list.AddItem("Load Assets...", "", 0, nil)
-	list.AddItem("Quit", "", 'q', func() { a.app.Stop() })
 
-	flex := tview.NewFlex().SetDirection(tview.FlexRow)
-	flex.AddItem(tview.NewBox().SetBorder(true).SetTitle("IT Room"), 3, 0, false)
-	flex.AddItem(list, 0, 1, true)
+	menu := tview.NewList()
+	menuWidth := 20
+	menu.AddItem("Assets", "", 0, nil)
+	menu.AddItem("Assignments", "", 0, nil)
+	menu.AddItem("Maintenance", "", 0, nil)
+	menu.AddItem("Licenses", "", 0, nil)
+	menu.AddItem("Consumables", "", 0, nil)
+	menu.ShowSecondaryText(false)
 
-	a.app.SetRoot(flex, true)
+	frame := tview.NewFrame(menu)
+	frame.SetBorder(true)
+	frame.SetBorders(1, 0, 1, 1, 1, 1)
+	frame.SetTitle(" IT Room ")
+
+	pages := tview.NewBox().SetTitle("page").SetBorder(true)
+
+	flex := tview.NewFlex()
+	flex.AddItem(frame, menuWidth+3, 1, true)
+	flex.AddItem(pages, 0, 1, false)
+
+	a.app.SetRoot(flex, true).EnableMouse(true)
 	if err := a.app.Run(); err != nil {
 		return fmt.Errorf("tview run: %w", err)
 	}
