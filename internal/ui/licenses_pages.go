@@ -5,28 +5,28 @@ import (
 	"github.com/rivo/tview"
 )
 
-type AssignmentsPage struct {
+type LicensesPage struct {
 	view *tview.Flex
 	db   *db.DB
 }
 
-func NewAssigmentsPage(db *db.DB) *AssignmentsPage {
-	p := &AssignmentsPage{db: db}
+func NewLicensesPage(db *db.DB) *LicensesPage {
+	p := &LicensesPage{db: db}
 	p.build()
 	return p
 }
 
-func (p *AssignmentsPage) Name() string {
-	return "Assigments"
+func (p *LicensesPage) Name() string {
+	return "Licenses"
 }
 
-func (p *AssignmentsPage) View() tview.Primitive {
+func (p *LicensesPage) View() tview.Primitive {
 	return p.view
 }
 
-func (p *AssignmentsPage) build() {
+func (p *LicensesPage) build() {
 	header := tview.NewTextView().
-		SetText("[::b]Assignments[::-]\nAsset assignments to employees").
+		SetText("[::b]Licenses[::-]\nLicense management and assignments").
 		SetDynamicColors(true)
 
 	content := tview.NewFlex().

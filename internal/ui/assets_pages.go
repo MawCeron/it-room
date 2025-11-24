@@ -7,12 +7,13 @@ import (
 )
 
 type AssetsPage struct {
-	view *tview.Flex
-	db   *db.DB
+	view  *tview.Flex
+	db    *db.DB
+	pages *tview.Pages
 }
 
-func NewAssetsPage(db *db.DB) *AssetsPage {
-	p := &AssetsPage{db: db}
+func NewAssetsPage(db *db.DB, pages *tview.Pages) *AssetsPage {
+	p := &AssetsPage{db: db, pages: pages}
 	p.build()
 	return p
 }
@@ -26,21 +27,9 @@ func (p *AssetsPage) View() tview.Primitive {
 }
 
 func (p *AssetsPage) build() {
-	searchInput := tview.NewInputField().
-		SetLabel("Search:").
-		SetFieldWidth(25)
-
-	btnNew := tview.NewButton("New Asset").
-		SetStyle(tcell.StyleDefault.Background(tcell.ColorGreen))
-
-	topBar := tview.NewFlex().
-		SetDirection(tview.FlexColumn).
-		AddItem(searchInput, 50, 0, true).
-		AddItem(tview.NewBox(), 0, 1, false).
-		AddItem(btnNew, 16, 0, false)
 
 	header := tview.NewTextView().
-		SetText("[::b]Assets[::-]\nIT equipment inventory").
+		SetText("[::b]Assets[::-]\nIT equipment inventory management").
 		SetDynamicColors(true)
 
 	table := tview.NewTable().
@@ -84,8 +73,16 @@ func (p *AssetsPage) build() {
 		table.SetCell(r, 4, statusCell)
 
 		table.SetCell(r, 5, tview.NewTableCell(asset.location))
-		table.SetCell(r, 6, tview.NewTableCell("[Ver]").SetTextColor(tcell.ColorAqua))
+
 	}
+
+	table.SetSelectedFunc(func(row, column int) {
+		if row == 0 {
+			return
+		}
+		asset := assets[row-1]
+		p.showAssetModal(asset)
+	})
 
 	tableBox := tview.NewFlex().AddItem(table, 0, 1, true)
 	tableBox.SetBorder(true).SetTitle(" Inventory ")
@@ -97,8 +94,6 @@ func (p *AssetsPage) build() {
 	content := tview.NewFlex().
 		SetDirection(tview.FlexRow).
 		AddItem(header, 2, 0, false).
-		AddItem(nil, 1, 0, false).
-		AddItem(topBar, 1, 0, false).
 		AddItem(nil, 1, 0, false).
 		AddItem(tableBox, 0, 1, true).
 		AddItem(statusBar, 1, 0, false)
@@ -114,4 +109,19 @@ func (p *AssetsPage) build() {
 				AddItem(nil, 2, 0, false),
 			0, 1, true).
 		AddItem(nil, 1, 0, false)
+}
+
+func (p *AssetsPage) showAssetModal(asset struct {
+	code, aType, model, serial, status, location string
+}) {
+	modal := tview.NewModal().
+		SetText("Asset Details:\n" +
+			"Code: " + asset.code + "\n" +
+			"Model: " + asset.model).
+		AddButtons([]string{"OK"}).
+		SetDoneFunc(func(idx int, label string) {
+			p.pages.RemovePage("assetModal")
+		})
+
+	p.pages.AddPage("assetModal", modal, true, true)
 }
