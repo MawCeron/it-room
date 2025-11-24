@@ -27,37 +27,28 @@ func (p *AssetsPage) View() tview.Primitive {
 
 func (p *AssetsPage) build() {
 	searchInput := tview.NewInputField().
-		SetLabel("🔍 ").
-		SetPlaceholder("Buscar por código, marca, modelo, serie...").
-		SetFieldWidth(40)
+		SetLabel("Search: ").
+		SetFieldWidth(25)
 
-	btnFilters := tview.NewButton("Filtros").
-		SetStyle(tcell.StyleDefault.Background(tcell.ColorDarkSlateGray))
-
-	btnNew := tview.NewButton("+ Nuevo Activo").
-		SetStyle(tcell.StyleDefault.Background(tcell.ColorDarkGreen))
+	btnNew := tview.NewButton("New Asset").
+		SetStyle(tcell.StyleDefault.Background(tcell.ColorGreen))
 
 	topBar := tview.NewFlex().
 		SetDirection(tview.FlexColumn).
 		AddItem(searchInput, 50, 0, true).
-		AddItem(nil, 1, 0, false). // Espaciador
-		AddItem(btnFilters, 10, 0, false).
-		AddItem(nil, 1, 0, false).
-		AddItem(btnNew, 16, 0, false).
-		AddItem(nil, 0, 1, false) // Empuja a la izquierda
+		AddItem(tview.NewBox(), 0, 1, false).
+		AddItem(btnNew, 16, 0, false)
 
-	// 2. Encabezado de sección
 	header := tview.NewTextView().
-		SetText("[::b]Activos[::-]\nGestión de equipos e inventario de TI").
+		SetText("[::b]Assets[::-]\nIT equipment inventory").
 		SetDynamicColors(true)
 
-	// 3. Tabla de datos
 	table := tview.NewTable().
 		SetBorders(false).
 		SetSelectable(true, false).
 		SetFixed(1, 0)
 
-	headers := []string{"Código", "Tipo", "Marca/Modelo", "Serie", "Estatus", "Ubicación", "Acciones"}
+	headers := []string{"Internal Code", "Type", "Model", "Serial Number", "Status", "Location"}
 	for col, h := range headers {
 		cell := tview.NewTableCell(h).
 			SetTextColor(tcell.ColorYellow).
@@ -66,7 +57,6 @@ func (p *AssetsPage) build() {
 		table.SetCell(0, col, cell)
 	}
 
-	// Datos de ejemplo
 	assets := []struct {
 		code, aType, model, serial, status, location string
 	}{
@@ -82,7 +72,6 @@ func (p *AssetsPage) build() {
 		table.SetCell(r, 2, tview.NewTableCell(asset.model))
 		table.SetCell(r, 3, tview.NewTableCell(asset.serial))
 
-		// Estatus con color
 		statusCell := tview.NewTableCell(asset.status)
 		switch asset.status {
 		case "Disponible":
@@ -99,20 +88,30 @@ func (p *AssetsPage) build() {
 	}
 
 	tableBox := tview.NewFlex().AddItem(table, 0, 1, true)
-	tableBox.SetBorder(true).SetTitle(" Inventario ")
+	tableBox.SetBorder(true).SetTitle(" Inventory ")
 
-	// 4. Barra de estado
 	statusBar := tview.NewTextView().
-		SetText(" [yellow]↑↓[white] Navegar  [yellow]Enter[white] Ver detalles  [yellow]n[white] Nuevo  [yellow]f[white] Filtros  [yellow]d[white] Eliminar  [yellow]?[white] Ayuda").
+		SetText(" [yellow]↑↓[white] Navigate  [yellow]Enter[white] View details  [yellow]n[white] New  [yellow]f[white] Filters  [yellow]d[white] Delete  [yellow]?[white] Help").
 		SetDynamicColors(true)
 
-	// Layout principal
-	p.view = tview.NewFlex().
+	content := tview.NewFlex().
 		SetDirection(tview.FlexRow).
-		AddItem(topBar, 1, 0, false).
-		AddItem(nil, 1, 0, false). // Espaciador
 		AddItem(header, 2, 0, false).
+		AddItem(nil, 1, 0, false).
+		AddItem(topBar, 1, 0, false).
 		AddItem(nil, 1, 0, false).
 		AddItem(tableBox, 0, 1, true).
 		AddItem(statusBar, 1, 0, false)
+
+	p.view = tview.NewFlex().
+		SetDirection(tview.FlexRow).
+		AddItem(nil, 1, 0, false).
+		AddItem(
+			tview.NewFlex().
+				SetDirection(tview.FlexColumn).
+				AddItem(nil, 2, 0, false).
+				AddItem(content, 0, 1, true).
+				AddItem(nil, 2, 0, false),
+			0, 1, true).
+		AddItem(nil, 1, 0, false)
 }
