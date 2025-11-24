@@ -20,16 +20,21 @@ func NewApp(d *db.DB) *App {
 
 func (a *App) Run() error {
 
-	pages := tview.NewPages()
 	assetsPage := NewAssetsPage(a.db)
+	assignmentsPage := NewAssigmentsPage(a.db)
+
+	pages := tview.NewPages()
 	pages.AddPage(assetsPage.Name(), assetsPage.View(), true, true)
+	pages.AddPage(assignmentsPage.Name(), assignmentsPage.view, true, false)
 
 	menu := tview.NewList()
 	menuWidth := 20
 	menu.AddItem("Assets", "", 0, func() {
 		pages.SwitchToPage(assetsPage.Name())
 	})
-	menu.AddItem("Assignments", "", 0, nil)
+	menu.AddItem("Assignments", "", 0, func() {
+		pages.SwitchToPage(assignmentsPage.Name())
+	})
 	menu.AddItem("Maintenance", "", 0, nil)
 	menu.AddItem("Licenses", "", 0, nil)
 	menu.AddItem("Consumables", "", 0, nil)
