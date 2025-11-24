@@ -171,3 +171,25 @@ CREATE INDEX IF NOT EXISTS idx_license_assignments_license ON license_assignment
 CREATE INDEX IF NOT EXISTS idx_license_assignments_asset ON license_assignments(asset_id);
 
 -- ======================================================
+
+INSERT INTO asset_categories
+(code_prefix, description)
+VALUES
+	('EQ', 'Computer Equipment'),
+	('PR', 'Printers and Multifuction Devices'),
+	('SC', 'Scanners'),
+	('NT', 'Newtork Devices'),
+	('MD', 'Mobile Devices'),
+	('MS', 'Monitors and Screens'),
+	('SR', 'Servers'),
+	('AC', 'Accessories'),
+	('UP', 'UPS'),
+	('AV', 'Audio and Video Equipment'),
+	('SD', 'Storage Devices');
+
+INSERT INTO asset_statuses
+(status_name)
+VALUES('Assigned'),
+('Available'),
+('Under Maintenance'),
+('Retired');
