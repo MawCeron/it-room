@@ -27,7 +27,7 @@ func (p *AssetsPage) View() tview.Primitive {
 
 func (p *AssetsPage) build() {
 	searchInput := tview.NewInputField().
-		SetLabel("Search: ").
+		SetLabel("Search:").
 		SetFieldWidth(25)
 
 	btnNew := tview.NewButton("New Asset").
