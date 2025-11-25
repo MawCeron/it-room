@@ -189,6 +189,15 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 		SetOptions(typeOptions, nil).
 		SetFieldWidth(30)
 
+	if assetCode == "" {
+		assetCode = categoryPrefixes[0] + "-"
+	}
+
+	assetTagInput := tview.NewInputField().
+		SetLabel("Asset Tag").
+		SetText(assetCode).
+		SetFieldWidth(30)
+
 	form.AddDropDown("Category", categoryOptions, selectedOption, func(option string, optionIndex int) {
 		types, _ = assetsRepo.GetAssetTypes(categoryIDs[optionIndex])
 		typeOptions := make([]string, len(types))
@@ -200,11 +209,12 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 
 		typeDropDown.SetOptions(typeOptions, nil)
 		typeDropDown.SetCurrentOption(0)
+		assetTagInput.SetText(categoryPrefixes[optionIndex] + "-")
 	})
 	form.AddFormItem(typeDropDown)
 
 	// 3. Agregar resto de campos
-	form.AddInputField("Asset Code", assetCode, 20, nil, nil)
+	form.AddFormItem(assetTagInput)
 	form.AddInputField("Make", maker, 30, nil, nil)
 	form.AddInputField("Model", model, 30, nil, nil)
 	form.AddInputField("Serial Number", serialNumber, 30, nil, nil)
