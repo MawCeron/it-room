@@ -18,14 +18,11 @@ func (p *AssetsPage) buildAssetsTable() *tview.Flex {
 	p.addTableHeaders(table)
 
 	assets := p.loadAssets()
-	if assets == nil {
-		return tview.NewFlex().
-			AddItem(tview.NewTextView().
-				SetText("Error loading assets"), 0, 1, false)
+	if len(assets) > 0 {
+		p.fillTableRows(table, assets)
 	}
 
-	p.fillTableRows(table, assets)
-	p.bindTableEvents(table, assets)
+	p.bindTableEvents(table, assets) // Siempre bind, assets puede ser nil o vacío
 
 	box := tview.NewFlex().AddItem(table, 0, 1, true)
 	box.SetBorder(true).
@@ -34,8 +31,34 @@ func (p *AssetsPage) buildAssetsTable() *tview.Flex {
 	return box
 }
 
+func (p *AssetsPage) bindTableEvents(t *tview.Table, assets []*models.Asset) {
+	t.SetSelectedFunc(func(row, _ int) {
+		if row == 0 || assets == nil || row > len(assets) {
+			return
+		}
+		asset := assets[row-1]
+		p.showAssetModal(asset)
+	})
+
+	t.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		row, _ := t.GetSelection()
+
+		switch event.Rune() {
+		case 'n', 'N':
+			p.showNewAssetForm()
+			return nil
+		case 'e', 'E':
+			if assets != nil && row > 0 && row <= len(assets) {
+				p.showEditAssetForm(assets[row-1])
+			}
+			return nil
+		}
+		return event
+	})
+}
+
 func (p *AssetsPage) addTableHeaders(t *tview.Table) {
-	headers := []string{"Internal Code", "Type", "Model", "Serial Number", "Status"}
+	headers := []string{"Asset Tag", "Type", "Model", "Serial Number", "Status"}
 	for col, h := range headers {
 		cell := tview.NewTableCell(h).
 			SetTextColor(tcell.ColorYellow).
@@ -63,34 +86,6 @@ func (p *AssetsPage) fillTableRows(t *tview.Table, assets []*models.Asset) {
 		t.SetCell(r, 3, tview.NewTableCell(asset.SerialNumber))
 		t.SetCell(r, 4, p.statusCell(asset.StatusID))
 	}
-}
-
-func (p *AssetsPage) bindTableEvents(t *tview.Table, assets []*models.Asset) {
-	t.SetSelectedFunc(func(row, _ int) {
-		if row == 0 {
-			return
-		}
-		asset := assets[row-1]
-		p.showAssetModal(asset)
-	})
-
-	t.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		row, _ := t.GetSelection()
-
-		switch event.Rune() {
-		case 'n', 'N':
-			p.showNewAssetForm()
-			return nil
-
-		case 'e', 'E':
-			if row > 0 && row <= len(assets) {
-				p.showEditAssetForm(assets[row-1])
-			}
-			return nil
-		}
-
-		return event
-	})
 }
 
 func (p *AssetsPage) buildStatusBar() *tview.TextView {
