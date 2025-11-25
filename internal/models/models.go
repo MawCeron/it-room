@@ -13,11 +13,6 @@ type Asset struct {
 	SerialNumber    string     `db:"serial_number"`
 	Make            string     `db:"make"`
 	Model           string     `db:"model"`
-	Processor       *string    `db:"processor"`        // Nullable
-	RamGB           *int       `db:"ram_gb"`           // Nullable
-	StorageTB       *float64   `db:"storage_tb"`       // Nullable
-	StorageType     *string    `db:"storage_type"`     // Nullable (HDD, SSD, Hybrid)
-	OperatingSystem *string    `db:"operating_system"` // Nullable
 	PurchaseDate    time.Time  `db:"purchase_date"`
 	WarrantyEndDate *time.Time `db:"warranty_end_date"` // Nullable
 	LocationID      int        `db:"location_id"`
