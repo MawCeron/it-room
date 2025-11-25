@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/MawCeron/it-room/internal/db"
+	"github.com/MawCeron/it-room/internal/ui/assets"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -23,7 +24,7 @@ func (a *App) Run() error {
 
 	pages := tview.NewPages()
 
-	assetsPage := NewAssetsPage(a.db, pages)
+	assetsPage := assets.New(a.db, pages)
 	licensesPage := NewLicensesPage(a.db)
 
 	pages.AddPage(assetsPage.Name(), assetsPage.View(), true, true)
