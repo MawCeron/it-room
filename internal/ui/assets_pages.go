@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/MawCeron/it-room/internal/db"
 	"github.com/MawCeron/it-room/internal/models"
@@ -89,11 +90,28 @@ func (p *AssetsPage) build() {
 		p.showAssetModal(asset)
 	})
 
+	table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		row, _ := table.GetSelection()
+
+		switch event.Rune() {
+		case 'n', 'N':
+			p.showNewAssetForm()
+			return nil
+		case 'e', 'E':
+			if row > 0 && row <= len(assets) {
+				p.showEditAssetForm(assets[row-1])
+			}
+			return nil
+		}
+
+		return event
+	})
+
 	tableBox := tview.NewFlex().AddItem(table, 0, 1, true)
 	tableBox.SetBorder(true).SetTitle(" [::b]Assets[::-] - IT equipment inventory management ")
 
 	statusBar := tview.NewTextView().
-		SetText(" [yellow]↑↓[white] Navigate  [yellow]Enter[white] View details  [yellow]n[white] New  [yellow]f[white] Filters  [yellow]d[white] Delete  [yellow]?[white] Help").
+		SetText(" [yellow]↑↓[white] Navigate  [yellow]Enter[white] View details [yellow]f[white] Filters  [yellow]n[white] New Asset  [yellow]a[white] Change Assignation  [red]r[white] Retire Asset  [yellow]?[white] Help").
 		SetDynamicColors(true)
 
 	content := tview.NewFlex().
@@ -124,4 +142,88 @@ func (p *AssetsPage) showAssetModal(asset *models.Asset) {
 		})
 
 	p.pages.AddPage("assetModal", modal, true, true)
+}
+
+func (p *AssetsPage) showNewAssetForm() {
+	p.showAssetForm(nil)
+}
+
+func (p *AssetsPage) showEditAssetForm(asset *models.Asset) {
+	p.showAssetForm(asset)
+}
+
+func (p *AssetsPage) showAssetForm(asset *models.Asset) {
+	isEdit := asset != nil
+	title := "New Asset"
+	if isEdit {
+		title = "Edit Asset"
+	}
+
+	form := tview.NewForm()
+	assetsRepo := repo.NewAssetRepo(p.db.Conn)
+	categories, _ := assetsRepo.GetAssetCategories()
+
+	categoryOptions := make([]string, len(categories))
+	categoryIDs := make([]int, len(categories))
+	categoryPrefixes := make([]string, len(categories))
+	for i, c := range categories {
+		categoryOptions[i] = c.Description
+		categoryIDs[i] = c.CategoryId
+		categoryPrefixes[i] = c.CodePrefix
+	}
+
+	var assetCode, serialNumber, maker, model string
+	purchaseDate := time.Now().Format("2006-01-02")
+	var selectedOption int
+
+	types, _ := assetsRepo.GetAssetTypes(categoryIDs[selectedOption])
+	typeOptions := make([]string, len(types))
+	typeIDs := make([]int, len(types))
+	for i, t := range types {
+		typeOptions[i] = t.TypeName
+		typeIDs[i] = t.TypeID
+	}
+
+	typeDropDown := tview.NewDropDown().
+		SetLabel("Type").
+		SetOptions(typeOptions, nil).
+		SetFieldWidth(30)
+
+	form.AddDropDown("Category", categoryOptions, selectedOption, func(option string, optionIndex int) {
+		types, _ = assetsRepo.GetAssetTypes(categoryIDs[optionIndex])
+		typeOptions := make([]string, len(types))
+		typeIDs := make([]int, len(types))
+		for i, t := range types {
+			typeOptions[i] = t.TypeName
+			typeIDs[i] = t.TypeID
+		}
+
+		typeDropDown.SetOptions(typeOptions, nil)
+		typeDropDown.SetCurrentOption(0)
+	})
+	form.AddFormItem(typeDropDown)
+
+	// 3. Agregar resto de campos
+	form.AddInputField("Asset Code", assetCode, 20, nil, nil)
+	form.AddInputField("Make", maker, 30, nil, nil)
+	form.AddInputField("Model", model, 30, nil, nil)
+	form.AddInputField("Serial Number", serialNumber, 30, nil, nil)
+	form.AddInputField("Purchase Date (YYYY-MM-DD)", purchaseDate, 15, nil, nil)
+
+	form.AddButton("Save", nil)
+	form.AddButton("Cancel", func() {
+		p.pages.RemovePage("assetForm")
+	})
+
+	form.SetBorder(true).SetTitle(" " + title + " ")
+	flex := tview.NewFlex().
+		AddItem(nil, 0, 1, false).
+		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
+			AddItem(nil, 0, 1, false).
+			AddItem(form, 20, 1, true).
+			AddItem(nil, 0, 1, false), 80, 1, true).
+		AddItem(nil, 0, 1, false)
+
+	p.pages.AddPage("assetForm", flex, true, true)
+
 }

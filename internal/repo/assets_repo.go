@@ -50,3 +50,45 @@ FROM assets`)
 
 	return out, nil
 }
+
+func (r *AssetRepo) GetAssetCategories() ([]*models.AssetCategory, error) {
+	rows, err := r.db.Query(`SELECT category_id, code_prefix, description
+FROM asset_categories;`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []*models.AssetCategory
+	for rows.Next() {
+		var c models.AssetCategory
+
+		if err := rows.Scan(&c.CategoryId, &c.CodePrefix, &c.Description); err != nil {
+			return nil, err
+		}
+
+		out = append(out, &c)
+	}
+
+	return out, nil
+}
+
+func (r *AssetRepo) GetAssetTypes(category int) ([]*models.AssetType, error) {
+	rows, err := r.db.Query(`SELECT type_id, category_id, type_name
+FROM asset_types WHERE category_id = ?`, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []*models.AssetType
+	for rows.Next() {
+		var t models.AssetType
+
+		if err := rows.Scan(&t.TypeID, &t.CategoryID, &t.TypeName); err != nil {
+			return nil, err
+		}
+
+		out = append(out, &t)
+	}
+
+	return out, nil
+}
