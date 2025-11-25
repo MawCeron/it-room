@@ -269,7 +269,7 @@ INSERT INTO asset_types (category_id, type_name) VALUES
 (11, 'Patch Panel'),
 (11, 'Cable Tester'),
 (11, 'Tool Kit'),
-(11, 'Label Printer'),
+(11, 'Label Maker'),
 
 -- PE (12)
 (12, 'UPS'),
