@@ -30,3 +30,9 @@ type AssetType struct {
 	CategoryID int    `db:"category_id"`
 	TypeName   string `db:"type_name"`
 }
+
+type Location struct {
+	LocationID int    `db:"location_id"`
+	Name       string `db:"name"`
+	Type       string `db:"type"`
+}

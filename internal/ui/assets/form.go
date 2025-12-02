@@ -61,6 +61,22 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 		assetCode = categoryPrefixes[0] + "-"
 	}
 
+	locationsRepo := repo.NewLocationRepo(p.db.Conn)
+	locations, _ := locationsRepo.List()
+	locationOptions := make([]string, len(locations))
+	locationIDs := make([]int, len(locations))
+	locationTypes := make([]string, len(locations))
+	for i, l := range locations {
+		locationOptions[i] = l.Name
+		locationIDs[i] = l.LocationID
+		locationTypes[i] = l.Type
+	}
+
+	locationDropDown := tview.NewDropDown().
+		SetLabel("Location").
+		SetOptions(locationOptions, nil).
+		SetFieldWidth(30)
+
 	assetTagInput := tview.NewInputField().
 		SetLabel("Asset Tag").
 		SetText(assetCode).
@@ -121,6 +137,7 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 	form.AddInputField("Serial Number", serialNumber, 30, nil, nil)
 	form.AddFormItem(purchaseDateInput)
 	form.AddFormItem(warrantyEndInput)
+	form.AddFormItem(locationDropDown)
 
 	form.AddButton("Save", nil)
 	form.AddButton("Cancel", func() {
