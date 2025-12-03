@@ -80,9 +80,9 @@ func (p *AssetsPage) loadAssets() []*models.Asset {
 func (p *AssetsPage) fillTableRows(t *tview.Table, assets []*models.Asset) {
 	for row, asset := range assets {
 		r := row + 1
-		t.SetCell(r, 0, tview.NewTableCell(asset.AssetCode))
+		t.SetCell(r, 0, tview.NewTableCell(asset.AssetTag))
 		t.SetCell(r, 1, tview.NewTableCell(fmt.Sprintf("%d", asset.TypeID)))
-		t.SetCell(r, 2, tview.NewTableCell(fmt.Sprintf("%s %s", asset.Make, asset.Model)))
+		t.SetCell(r, 2, tview.NewTableCell(fmt.Sprintf("%s %s", asset.Maker, asset.Model)))
 		t.SetCell(r, 3, tview.NewTableCell(asset.SerialNumber))
 		t.SetCell(r, 4, p.statusCell(asset.StatusID))
 	}

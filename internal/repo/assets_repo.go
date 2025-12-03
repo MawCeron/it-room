@@ -14,7 +14,7 @@ func NewAssetRepo(db *sql.DB) *AssetRepo {
 }
 
 func (r *AssetRepo) List() ([]*models.Asset, error) {
-	rows, err := r.db.Query(`SELECT asset_id, asset_code, type_id, status_id, serial_number, make, model, purchase_date, warranty_end_date, location_id, notes
+	rows, err := r.db.Query(`SELECT asset_id, asset_tag, type_id, status_id, serial_number, make, model, purchase_date, warranty_end_date, location_id, notes
 FROM assets`)
 	if err != nil {
 		return nil, err
@@ -25,8 +25,8 @@ FROM assets`)
 		var a models.Asset
 		var purchaseDate, warrantyEndDate sql.NullString
 
-		if err := rows.Scan(&a.AssetID, &a.AssetCode, &a.TypeID, &a.StatusID,
-			&a.SerialNumber, &a.Make, &a.Model, &purchaseDate, &warrantyEndDate,
+		if err := rows.Scan(&a.AssetID, &a.AssetTag, &a.TypeID, &a.StatusID,
+			&a.SerialNumber, &a.Maker, &a.Model, &purchaseDate, &warrantyEndDate,
 			&a.LocationID, &a.Notes); err != nil {
 			return nil, err
 		}

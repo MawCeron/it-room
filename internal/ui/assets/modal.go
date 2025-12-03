@@ -8,7 +8,7 @@ import (
 func (p *AssetsPage) showAssetModal(asset *models.Asset) {
 	modal := tview.NewModal().
 		SetText("Asset Details:\n" +
-			"Code: " + asset.AssetCode + "\n" +
+			"Code: " + asset.AssetTag + "\n" +
 			"Model: " + asset.Model).
 		AddButtons([]string{"OK"}).
 		SetDoneFunc(func(idx int, label string) {

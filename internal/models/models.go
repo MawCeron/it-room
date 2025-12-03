@@ -7,11 +7,11 @@ import (
 // Asset represents an IT asset in the inventory
 type Asset struct {
 	AssetID         string     `db:"asset_id"`
-	AssetCode       string     `db:"asset_code"`
+	AssetTag        string     `db:"asset_tag"`
 	TypeID          int        `db:"type_id"`
 	StatusID        int        `db:"status_id"`
 	SerialNumber    string     `db:"serial_number"`
-	Make            string     `db:"make"`
+	Maker           string     `db:"make"`
 	Model           string     `db:"model"`
 	PurchaseDate    time.Time  `db:"purchase_date"`
 	WarrantyEndDate *time.Time `db:"warranty_end_date"` // Nullable
