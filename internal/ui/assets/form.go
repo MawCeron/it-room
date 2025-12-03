@@ -55,7 +55,7 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 	typeDropDown := tview.NewDropDown().
 		SetLabel("Type").
 		SetOptions(typeOptions, nil).
-		SetFieldWidth(30)
+		SetFieldWidth(40)
 
 	if assetCode == "" {
 		assetCode = categoryPrefixes[0] + "-"
@@ -75,12 +75,12 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 	locationDropDown := tview.NewDropDown().
 		SetLabel("Location").
 		SetOptions(locationOptions, nil).
-		SetFieldWidth(30)
+		SetFieldWidth(40)
 
 	assetTagInput := tview.NewInputField().
 		SetLabel("Asset Tag").
 		SetText(assetCode).
-		SetFieldWidth(30)
+		SetFieldWidth(40)
 
 	purchaseDateInput := tview.NewInputField().
 		SetLabel("Purchase Date (YYYY-MM-DD)").
@@ -95,12 +95,12 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 			}
 			return false
 		}).
-		SetFieldWidth(30)
+		SetFieldWidth(40)
 
 	warrantyEndInput := tview.NewInputField().
 		SetLabel("Warranty End Date (YYYY-MM-DD)").
 		SetText(warrantyEndDate).
-		SetFieldWidth(30)
+		SetFieldWidth(40)
 
 	purchaseDateInput.SetDoneFunc(func(key tcell.Key) {
 		text := purchaseDateInput.GetText()
@@ -116,28 +116,35 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 		warrantyEndInput.SetText(oneYearLater.Format(DateLayout))
 	})
 
-	form.AddDropDown("Category", categoryOptions, selectedOption, func(option string, optionIndex int) {
-		types, _ = assetsRepo.GetAssetTypes(categoryIDs[optionIndex])
+	categoryDropDown := tview.NewDropDown().
+		SetLabel("Category").
+		SetOptions(categoryOptions, func(option string, optionIndex int) {
+			types, _ = assetsRepo.GetAssetTypes(categoryIDs[optionIndex])
 
-		typeOptions := make([]string, len(types))
-		typeIDs := make([]int, len(types))
-		for i, t := range types {
-			typeOptions[i] = t.TypeName
-			typeIDs[i] = t.TypeID
-		}
+			typeOptions := make([]string, len(types))
+			typeIDs := make([]int, len(types))
+			for i, t := range types {
+				typeOptions[i] = t.TypeName
+				typeIDs[i] = t.TypeID
+			}
 
-		typeDropDown.SetOptions(typeOptions, nil)
-		typeDropDown.SetCurrentOption(0)
-		assetTagInput.SetText(categoryPrefixes[optionIndex] + "-")
-	})
+			typeDropDown.SetOptions(typeOptions, nil)
+			typeDropDown.SetCurrentOption(0)
+			assetTagInput.SetText(categoryPrefixes[optionIndex] + "-")
+		}).
+		SetCurrentOption(selectedOption).
+		SetFieldWidth(40)
+
+	form.AddFormItem(categoryDropDown)
 	form.AddFormItem(typeDropDown)
 	form.AddFormItem(assetTagInput)
-	form.AddInputField("Make", maker, 30, nil, nil)
-	form.AddInputField("Model", model, 30, nil, nil)
-	form.AddInputField("Serial Number", serialNumber, 30, nil, nil)
+	form.AddInputField("Make", maker, 40, nil, nil)
+	form.AddInputField("Model", model, 40, nil, nil)
+	form.AddInputField("Serial Number", serialNumber, 40, nil, nil)
 	form.AddFormItem(purchaseDateInput)
 	form.AddFormItem(warrantyEndInput)
 	form.AddFormItem(locationDropDown)
+	form.AddTextArea("Notes", "", 40, 0, 0, nil)
 
 	form.AddButton("Save", nil)
 	form.AddButton("Cancel", func() {
@@ -150,7 +157,7 @@ func (p *AssetsPage) showAssetForm(asset *models.Asset) {
 		AddItem(nil, 0, 1, false).
 		AddItem(tview.NewFlex().SetDirection(tview.FlexRow).
 			AddItem(nil, 0, 1, false).
-			AddItem(form, 22, 1, true).
+			AddItem(form, 30, 1, true).
 			AddItem(nil, 0, 1, false), 80, 1, true).
 		AddItem(nil, 0, 1, false)
 
