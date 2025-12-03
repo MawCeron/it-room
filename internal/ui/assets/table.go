@@ -9,6 +9,8 @@ import (
 	"github.com/rivo/tview"
 )
 
+// buildAssetsTable creates the main assets table with headers, data, and event bindings
+// Returns a flex container with the bordered table inside
 func (p *AssetsPage) buildAssetsTable() *tview.Flex {
 	table := tview.NewTable().
 		SetBorders(false).
@@ -22,7 +24,8 @@ func (p *AssetsPage) buildAssetsTable() *tview.Flex {
 		p.fillTableRows(table, assets)
 	}
 
-	p.bindTableEvents(table, assets) // Siempre bind, assets puede ser nil o vacío
+	// Always bind events, even if assets is nil or empty
+	p.bindTableEvents(table, assets)
 
 	box := tview.NewFlex().AddItem(table, 0, 1, true)
 	box.SetBorder(true).
@@ -31,7 +34,10 @@ func (p *AssetsPage) buildAssetsTable() *tview.Flex {
 	return box
 }
 
+// bindTableEvents attaches event handlers for table interactions
+// Handles row selection (Enter) and keyboard shortcuts (n=new, e=edit)
 func (p *AssetsPage) bindTableEvents(t *tview.Table, assets []*models.Asset) {
+	// Handle row selection (Enter key)
 	t.SetSelectedFunc(func(row, _ int) {
 		if row == 0 || assets == nil || row > len(assets) {
 			return
@@ -40,6 +46,7 @@ func (p *AssetsPage) bindTableEvents(t *tview.Table, assets []*models.Asset) {
 		p.showAssetModal(asset)
 	})
 
+	// Handle keyboard shortcuts
 	t.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		row, _ := t.GetSelection()
 
@@ -57,6 +64,8 @@ func (p *AssetsPage) bindTableEvents(t *tview.Table, assets []*models.Asset) {
 	})
 }
 
+// addTableHeaders sets up the column headers for the assets table
+// Headers are displayed in yellow and are not selectable
 func (p *AssetsPage) addTableHeaders(t *tview.Table) {
 	headers := []string{"Asset Tag", "Type", "Model", "Serial Number", "Status"}
 	for col, h := range headers {
@@ -68,6 +77,8 @@ func (p *AssetsPage) addTableHeaders(t *tview.Table) {
 	}
 }
 
+// loadAssets retrieves all assets from the database
+// Returns nil if there's an error loading assets
 func (p *AssetsPage) loadAssets() []*models.Asset {
 	assetRepo := repo.NewAssetRepo(p.db.Conn)
 	assets, err := assetRepo.List()
@@ -77,6 +88,8 @@ func (p *AssetsPage) loadAssets() []*models.Asset {
 	return assets
 }
 
+// fillTableRows populates the table with asset data
+// Each row displays: asset tag, type ID, maker+model, serial number, and colored status
 func (p *AssetsPage) fillTableRows(t *tview.Table, assets []*models.Asset) {
 	for row, asset := range assets {
 		r := row + 1
@@ -88,6 +101,8 @@ func (p *AssetsPage) fillTableRows(t *tview.Table, assets []*models.Asset) {
 	}
 }
 
+// buildStatusBar creates the bottom status bar showing available keyboard shortcuts
+// Displays navigation keys and action shortcuts with color formatting
 func (p *AssetsPage) buildStatusBar() *tview.TextView {
 	return tview.NewTextView().
 		SetText(" [yellow]↑↓[white] Navigate  [yellow]Enter[white] View details [yellow]f[white] Filters  [yellow]n[white] New Asset  [yellow]a[white] Change Assignation  [red]r[white] Retire Asset  [yellow]?[white] Help").

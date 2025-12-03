@@ -5,6 +5,8 @@ import (
 	"github.com/rivo/tview"
 )
 
+// statusCell returns a colored table cell based on the asset status ID
+// Status IDs: 1=Assigned, 2=Available, 3=Under Maintenance, 4=Retired
 func (p *AssetsPage) statusCell(statusID int) *tview.TableCell {
 	switch statusID {
 	case 2:

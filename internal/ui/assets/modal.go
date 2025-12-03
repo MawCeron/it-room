@@ -5,6 +5,8 @@ import (
 	"github.com/rivo/tview"
 )
 
+// showAssetModal displays a modal with basic asset information
+// The modal shows the asset code and model, and can be dismissed with OK button
 func (p *AssetsPage) showAssetModal(asset *models.Asset) {
 	modal := tview.NewModal().
 		SetText("Asset Details:\n" +
